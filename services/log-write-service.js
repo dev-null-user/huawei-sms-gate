@@ -1,5 +1,6 @@
-const pathsave 	= "./logs";
-const fs 		= require('fs');
+const pathsave 		= "./logs";
+const fs 			= require('fs');
+const dateFormat	= require('date-format');
 
 module.exports = () => {
 	let ctx = {};
@@ -8,7 +9,7 @@ module.exports = () => {
 	ctx.write = (message, tag = null) => {
 		if (filename != '') {
 			
-			message = ('\n') + (tag ? tag + ': ' : '') + message;
+			message = ('\n') + (`[${dateFormat('yyyy-MM-dd hh:mm:ss', new Date())}] `) + (tag ? tag + ': ' : '') + message;
 			
 			fs.appendFile(`./${pathsave}/${filename}.log`, message, (err) => {
 			  if (err) {
@@ -18,9 +19,21 @@ module.exports = () => {
 			});
 		}
 	};
+
+	ctx.randomHash = (length = 14) => {
+		let result = '';
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		const charactersLength = characters.length;
+		let counter = 0;
+		while (counter < length) {
+		  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		  counter += 1;
+		}
+		return result;
+	}
 	
 	ctx.init = () => {
-		filename = Date.now();
+		filename = dateFormat('yyyy-MM-dd', new Date());
 	};
 	
 	return ctx;

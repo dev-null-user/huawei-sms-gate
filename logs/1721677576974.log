@@ -1,5 +1,0 @@
-
-Initialization: Huawei Beeline Service - api: http://192.168.8.1
-Sms gate started. http://192.168.17.145:3435
-Huawei Beeline Service - request - {"api":"http://192.168.8.1/api/webserver/token","option":{"method":"GET","headers":{"Content-Type":"application/xml"},"body":""}}
-Huawei Beeline Service - response - "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<response>\r\n<token>52090507</token>\r\n</response>\r\n"
