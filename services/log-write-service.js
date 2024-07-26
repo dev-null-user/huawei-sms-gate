@@ -8,6 +8,10 @@ module.exports = () => {
 	
 	ctx.write = (message, tag = null) => {
 		if (filename != '') {
+
+			if (filename != dateFormat('yyyy-MM-dd', new Date())) {
+				ctx.init();
+			}
 			
 			message = ('\n') + (`[${dateFormat('yyyy-MM-dd hh:mm:ss', new Date())}] `) + (tag ? tag + ': ' : '') + message;
 			
