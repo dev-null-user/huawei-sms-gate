@@ -10,6 +10,7 @@ const express = require('express');
 
 const logWriteService 		= require('./services/log-write-service')();
 const huaweiBeelineService  = require('./services/huawei-beeline-service')();
+const csvService			= require('./services/csv-service')();
 const appRoutes 			= require('./routes');
 
 const host = process.env.APP_HOST;
@@ -17,10 +18,11 @@ const port = process.env.APP_PORT;
 
 const app = express();
 
-appRoutes(app).init({logWriteService, huaweiBeelineService})
+appRoutes(app).init({logWriteService, huaweiBeelineService, csvService})
 
 let initServices = () => {
 	logWriteService.init();
+	csvService.init();
 	huaweiBeelineService.init(logWriteService);
 }
 
