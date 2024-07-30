@@ -1,5 +1,6 @@
 /node_modules
 /logs/*.log
-/report/*.csv
+/report/in/*.csv
+/report/out/*.csv
 /package-lock.json
 .env
