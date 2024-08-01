@@ -62,6 +62,7 @@ module.exports = () => {
 
 				if (result) {
 					for(item of result.elements[0].elements[1].elements) {
+						console.log(JSON.stringify(item));
 						let obj = {
 							isRead: item.elements[0].elements[0].text == '1',
 							index: item.elements[1].elements[0].text,

@@ -30,13 +30,15 @@ let initServices = () => {
 	listenerService.init(logWriteService, huaweiBeelineService, onNewMessages)
 }
 
-let onNewMessages = (messages) => {
+let onNewMessages = async (messages) => {
 	for (item of messages) {
 		if (new Date(item.datetime).getDate() != new Date().getDate()) {
 			continue;
 		}
-		csvService.appendRow(item.phone, item.message, 'in', item.datetime);
-		huaweiBeelineService.setReadMsg(item.index);
+		if(await huaweiBeelineService.setReadMsg(item.index)) {
+			csvService.appendRow(item.phone, item.message, 'in', item.datetime);
+			logWriteService.write(`Incoming message | phone - ${item.phone} | date - ${item.datetime} | msg - ${item.message}`);
+		}
 	}
 }
 

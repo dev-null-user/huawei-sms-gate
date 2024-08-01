@@ -1,4 +1,4 @@
-const RELOAD_TIME_SECONDS = 10;
+const RELOAD_TIME_SECONDS = 30;
 
 module.exports = () => {
     let ctx = {};
