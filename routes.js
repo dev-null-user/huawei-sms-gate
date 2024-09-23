@@ -1,6 +1,7 @@
 require('dotenv').config();
 
-const dateFormat	= require('date-format');
+const dateFormat = require('date-format');
+const csvToJson  = require('csvtojson/v2');
 
 const apiKey = process.env.API_KEY;
 
@@ -14,7 +15,7 @@ module.exports = (app) => {
     app.use((req, res, next) => {
         res.on('finish', () => {
             ctx.logWriteService.write(
-                `Request API | IP Address ${req.headers['x-forwarded-for'] || req.socket.remoteAddress } | request path - ${req.route.path} | request headers - ${JSON.stringify(req.rawHeaders)}] | request params - ${JSON.stringify(req.body ? req.body : req.query)}`, 
+                `Request API | IP Address ${req.headers['x-forwarded-for'] || req.socket.remoteAddress } | request headers - ${JSON.stringify(req.rawHeaders)}] | request params - ${JSON.stringify(req.query)}`, 
                 ctx.logWriteService.randomHash()
             );
         });
@@ -22,22 +23,43 @@ module.exports = (app) => {
     });
     
     app.get(`/`, async (req, res) => {
+        // await ctx.huaweiBeelineService.setReadMsg(40050);
+        // console.log(await ctx.huaweiBeelineService.getNewMessages());
+
         return res.send({status: STATUS_SUCCESS})
     });
 
     app.get(`/${apiKey}/report`, async (req, res) => {
-        ctx.csvService.readRowsByDate(req.query.date, (_result) => {
+        // ctx.csvService.readRowsByDate(req.query.date, (_result) => {
+            // if (_result) {
+            //     res.writeHead(200, {
+            //         'Content-Type': 'text/csv',
+            //         'Content-Disposition': `attachment; filename=report-${req.query.date ? req.query.date : dateFormat('dd-MM-yyyy', new Date())}.csv`
+            //     });
+            //     res.end(_result);
+            //     return;
+            // }
+
+        //     return res.send({'status': STATUS_ERROR, 'message': 'Not found file'});
+        // });
+        
+        ctx.csvService.getPathOnFile(req.query.date, (req.query.direction || 'out'), (_result) => {
             if (_result) {
-                res.writeHead(200, {
-                    'Content-Type': 'text/csv',
-                    'Content-Disposition': `attachment; filename=report-${req.query.date ? req.query.date : dateFormat('dd-MM-yyyy', new Date())}.csv`
+                csvToJson().fromFile(_result)
+                .then((jsonObj) => {
+                    ctx.csvService.resetCsv(_result);
+                    return res.send({'status': STATUS_SUCCESS, 'message': '', data: jsonObj});
+                })
+                .catch((err) => {
+                    let errMess = `Routes error: don\'t read format csv to json | path to file - ${_result}`;
+                    ctx.logWriteService.write(errMess);
+                    return res.send({status: STATUS_ERROR, message: errMess});
                 });
-                res.end(_result);
                 return;
             }
 
             return res.send({'status': STATUS_ERROR, 'message': 'Not found file'});
-        });
+        })
     });
     
     app.get(`/${apiKey}/send`, async (req, res) => {
